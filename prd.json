@@ -1,0 +1,250 @@
+{
+  "project": "Christmas Lights Route Optimizer",
+  "branchName": "ralph/route-optimizer",
+  "description": "Mobile-first route optimization app for home services companies - groups customer addresses by proximity and generates efficient multi-route plans with map visualization and navigation export",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Set up customer database schema",
+      "description": "As a developer, I need a database schema to store customer addresses so routes can be generated from real data.",
+      "acceptanceCriteria": [
+        "Create `customers` table with: id (uuid), name (text), address (text), city (text), state (text), zip (text), lat (float), lng (float), ghl_contact_id (text nullable), created_at (timestamp)",
+        "Create `routes` table with: id (uuid), name (text), date (date), start_address (text), start_lat (float), start_lng (float), end_address (text), end_lat (float), end_lng (float), created_at (timestamp)",
+        "Create `route_stops` table with: id (uuid), route_id (uuid FK), customer_id (uuid FK), stop_order (int), created_at (timestamp)",
+        "Create `settings` table with: id (uuid), ghl_access_token (text), ghl_refresh_token (text), ghl_location_id (text), updated_at (timestamp)",
+        "Create SQL migration file in supabase/migrations folder",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Build customer list view",
+      "description": "As a user, I want to see all my customers in a list so I can verify the addresses before generating routes.",
+      "acceptanceCriteria": [
+        "Display customers in a scrollable list showing name, address, city",
+        "Show total customer count at top of list",
+        "Empty state message when no customers exist with call-to-action to add customers",
+        "Mobile-responsive layout: card-based on mobile, table on desktop",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add customer manually",
+      "description": "As a user, I want to add a customer address manually so I can include new customers not yet in my CRM.",
+      "acceptanceCriteria": [
+        "'Add Customer' button opens modal or drawer",
+        "Form fields: name, address, city, state, zip (all required)",
+        "Address is geocoded to lat/lng on save using OpenStreetMap Nominatim API",
+        "Success toast on save, customer appears in list immediately",
+        "Form validation shows errors for empty required fields",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Import customers from GoHighLevel",
+      "description": "As a user, I want to sync customers from my GoHighLevel CRM so I can use my existing client database.",
+      "acceptanceCriteria": [
+        "'Connect GoHighLevel' button in import section",
+        "OAuth flow redirects to GHL authorization page",
+        "On callback, store access_token and refresh_token in settings table",
+        "Fetch contacts from GHL API /contacts endpoint with address data",
+        "Display list of GHL contacts with checkboxes for selection",
+        "Map GHL fields: contactName->name, address1->address, city, state, postalCode->zip",
+        "Geocode selected contacts on import",
+        "Store ghl_contact_id on customer record for future reference",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Import customers from CSV",
+      "description": "As a user, I want to upload a CSV of customer addresses so I can bulk import from my existing systems.",
+      "acceptanceCriteria": [
+        "'Import CSV' button opens file picker accepting .csv files",
+        "Parse CSV with columns: name, address, city, state, zip",
+        "Preview imported data in table before confirming",
+        "Geocode all addresses on import using batch requests",
+        "Show progress indicator during import",
+        "Report success count and list any failed rows with reasons",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Select customers for route generation",
+      "description": "As a user, I want to select which customers to include in today's route optimization.",
+      "acceptanceCriteria": [
+        "Checkbox on each customer row for selection",
+        "'Select All' and 'Deselect All' buttons at top of list",
+        "Selected count displayed prominently (e.g., '5 of 20 selected')",
+        "Selection state persists while scrolling the list",
+        "Minimum 2 customers required message if fewer selected",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Configure route generation settings",
+      "description": "As a user, I want to specify route settings including start/end locations so routes begin and end where I need them.",
+      "acceptanceCriteria": [
+        "Number input for 'Number of Routes' with range 1-10 (default 1)",
+        "Starting location address input with geocoding on blur",
+        "'Use current location' button that gets GPS coordinates for start",
+        "Ending location address input with geocoding on blur",
+        "'Return to start' toggle that copies start to end when enabled",
+        "'Generate Routes' button disabled until: 2+ customers selected AND start location set",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Implement route optimization algorithm",
+      "description": "As a developer, I need a route optimization algorithm that groups customers by proximity and orders stops efficiently.",
+      "acceptanceCriteria": [
+        "Create src/lib/routeOptimizer.ts with optimization functions",
+        "Cluster selected customers into N groups using k-means algorithm based on lat/lng",
+        "Within each cluster, order stops using nearest-neighbor heuristic starting from start location",
+        "Each route starts from the user-specified starting location",
+        "Each route ends at the user-specified ending location",
+        "Returns array of routes, each containing ordered array of customer stops",
+        "Include unit tests for clustering and ordering functions",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Display optimized routes on map",
+      "description": "As a user, I want to see my optimized routes on a map so I can visualize the driving plan.",
+      "acceptanceCriteria": [
+        "Install react-leaflet and leaflet packages",
+        "Interactive Leaflet map showing all route stops as markers",
+        "Each route displayed with different color (blue, red, green, orange, purple)",
+        "Route lines (polylines) connecting stops in order within each route",
+        "Start location marker with green icon, end location marker with red icon",
+        "Click any marker to see popup with customer name and address",
+        "Map auto-zooms to fit all stops with padding",
+        "Route legend showing color for each route number",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Display route details list",
+      "description": "As a user, I want to see each route as an ordered list so I know the exact sequence of stops.",
+      "acceptanceCriteria": [
+        "Tabbed or accordion view showing each route separately",
+        "Each route header shows: route number, stop count",
+        "Stops listed in order with: stop number (1, 2, 3...), customer name, full address",
+        "Start and end locations shown as first/last items with distinct styling",
+        "Clicking a route tab/accordion highlights that route on the map",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Export route to Google Maps",
+      "description": "As a user, I want to export a route to Google Maps for turn-by-turn navigation.",
+      "acceptanceCriteria": [
+        "'Open in Google Maps' button for each route",
+        "Button generates Google Maps directions URL with waypoints in correct order",
+        "URL format: https://www.google.com/maps/dir/start/stop1/stop2/.../end",
+        "Opens in new tab on desktop, opens Google Maps app on mobile",
+        "Warning message shown if route has more than 10 stops (Google Maps waypoint limit)",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Export route to Apple Maps",
+      "description": "As a user, I want to export a route to Apple Maps for iPhone navigation.",
+      "acceptanceCriteria": [
+        "'Open in Apple Maps' button for each route",
+        "Button generates Apple Maps URL with waypoints",
+        "Button only rendered on Apple devices (detect iOS/macOS via navigator.platform or userAgent)",
+        "On non-Apple devices, button is not rendered",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Save generated routes to database",
+      "description": "As a user, I want to save my generated routes so I can reference them later.",
+      "acceptanceCriteria": [
+        "'Save Routes' button appears after routes are generated",
+        "Date picker for route date (defaults to today)",
+        "On save: insert route record and all route_stops to Supabase",
+        "Success toast with confirmation message",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "View saved routes history",
+      "description": "As a user, I want to see my previously saved routes so I can reference past service days.",
+      "acceptanceCriteria": [
+        "'Route History' page accessible from main navigation",
+        "List of saved routes showing: date, number of routes, total stops",
+        "Sorted by date descending (newest first)",
+        "Click any entry to view full route details and map",
+        "Empty state when no saved routes exist",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
