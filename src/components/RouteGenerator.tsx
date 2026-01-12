@@ -1,7 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { Customer, Location, OptimizedRoute, RouteSettings } from '@/lib/types';
+
+// Dynamic import for Leaflet (SSR incompatible)
+const RouteMap = dynamic(() => import('./RouteMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] sm:h-[500px] bg-[var(--bg-secondary)] rounded-xl flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-[var(--bg-tertiary)] border-t-[var(--accent-amber)] rounded-full animate-spin" />
+    </div>
+  ),
+});
 import { geocodeAddress, getCurrentLocation, reverseGeocode } from '@/lib/geocoding';
 import {
   optimizeRoutes,
@@ -362,6 +373,13 @@ export default function RouteGenerator({ selectedCustomers, onBack }: RouteGener
       ) : (
         /* Generated Routes Display */
         <div className="space-y-4">
+          {/* Map */}
+          <RouteMap
+            routes={generatedRoutes}
+            activeRouteId={activeRouteId}
+            onRouteClick={(id) => setActiveRouteId(activeRouteId === id ? null : id)}
+          />
+
           {/* Summary */}
           <div className="card p-4 flex items-center justify-between">
             <div>
