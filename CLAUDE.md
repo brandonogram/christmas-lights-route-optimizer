@@ -6,7 +6,7 @@ A mobile-first web app to help users plan optimal routes for viewing Christmas l
 ## Tech Stack
 - **Framework**: Next.js 16 with App Router
 - **Styling**: Tailwind CSS (mobile-first)
-- **Database**: Supabase (pending setup)
+- **Database**: Supabase (project: qkfxhmsmorlgormrqopa)
 - **Mobile**: Capacitor for iOS conversion
 - **PWA**: next-pwa for installable web app
 
@@ -28,6 +28,7 @@ A mobile-first web app to help users plan optimal routes for viewing Christmas l
 - **Production**: https://christmas-lights-route-optimizer.vercel.app
 - **GitHub**: https://github.com/brandonogram/christmas-lights-route-optimizer
 
-## Notes
-- Supabase project needs to be created (free tier limit reached)
-- Add Supabase credentials to `.env.local` after creating project
+## Supabase
+- **Dashboard**: https://supabase.com/dashboard/project/qkfxhmsmorlgormrqopa
+- **Project Ref**: qkfxhmsmorlgormrqopa
+- **Region**: West US (North California)
