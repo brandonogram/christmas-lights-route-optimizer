@@ -6,6 +6,7 @@ import { Customer, CustomerFormData } from '@/lib/types';
 import { geocodeAddress } from '@/lib/geocoding';
 import CustomerList from '@/components/CustomerList';
 import AddCustomerModal from '@/components/AddCustomerModal';
+import RouteGenerator from '@/components/RouteGenerator';
 import Toast, { ToastType } from '@/components/Toast';
 
 type Tab = 'customers' | 'routes' | 'history';
@@ -151,10 +152,17 @@ export default function Home() {
             onImportCSV={handleImportCSV}
           />
         ) : activeTab === 'routes' ? (
-          <RouteGeneratorPlaceholder
-            selectedCount={selectedIds.size}
-            onGoToCustomers={() => setActiveTab('customers')}
-          />
+          selectedIds.size < 2 ? (
+            <RouteGeneratorPlaceholder
+              selectedCount={selectedIds.size}
+              onGoToCustomers={() => setActiveTab('customers')}
+            />
+          ) : (
+            <RouteGenerator
+              selectedCustomers={customers.filter((c) => selectedIds.has(c.id))}
+              onBack={() => setActiveTab('customers')}
+            />
+          )
         ) : (
           <HistoryPlaceholder />
         )}
